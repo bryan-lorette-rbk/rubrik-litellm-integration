@@ -1,0 +1,37 @@
+# 2-configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: litellm-config
+data:
+  config.yaml: |
+    model_list:
+      - model_name: gpt-3.5-turbo
+        litellm_params:
+          model: openai/gpt-3.5-turbo
+          api_key: "os.environ/OPENAI_API_KEY"
+    
+    # --- SHARED HEALTH CHECK SETUP ---
+    general_settings:
+      background_health_checks: true
+      use_shared_health_check: true
+      health_check_interval: 300 # Ping the providers every 5 minutes (300 seconds)
+      
+    litellm_settings:
+      cache: true
+      cache_params:
+        type: redis
+        host: "os.environ/REDIS_HOST"
+        port: "os.environ/REDIS_PORT"
+        password: "os.environ/REDIS_PASSWORD"
+
+---
+# Your plugin ConfigMap remains exactly the same
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: litellm-plugin
+data:
+  custom_plugin.py: |
+    def custom_callback(*args, **kwargs):
+        print("Custom LiteLLM plugin executed!")

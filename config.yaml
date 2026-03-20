@@ -1,0 +1,33 @@
+model_list:
+  - model_name: claude-sonnet-4-6 
+    litellm_params: 
+      model: claude-sonnet-4-6 
+      api_key: "os.environ/ANTH_KEY" 
+  - model_name: claude-haiku-4-5
+    litellm_params:
+      model: claude-haiku-4-5
+      api_key: "os.environ/ANTH_KEY" 
+  - model_name: claude-opus-4-6 
+    litellm_params: 
+      model: claude-opus-4-6 
+      api_key: "os.environ/ANTH_KEY" 
+  - model_name: gpt-5.4
+    litellm_params: 
+      model: gpt-5.4
+      api_key: "os.environ/OPENAI_KEY"
+  - model_name: gpt-5.4-mini
+    litellm_params: 
+      model: gpt-5.4-mini
+      api_key: "os.environ/OPENAI_KEY"
+
+
+litellm_settings: # module level litellm settings - https://github.com/BerriAI/litellm/blob/main/litellm/__init__.py
+  drop_params: True
+  # success_callback: ["langfuse"] # OPTIONAL - if you want to start sending LLM Logs to Langfuse. Make sure to set `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY` in your env
+  callbacks: rubrik_plugin.proxy_handler_instance
+  
+
+general_settings: 
+  master_key: sk_1234 # [OPTIONAL] Only use this if you to require all calls to contain this key (Authorization: Bearer sk-1234)
+  database_url: "postgresql://postgres:dbpass@localhost:5432/litellm"
+  store_models_in_db: true

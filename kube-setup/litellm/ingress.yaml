@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: litellm-ingress
+  annotations:
+    # F5 NGINX ("Proper" NGINX) uses the nginx.org prefix for annotations.
+    # Example: Bumping up body size limits for large LLM payloads
+    nginx.org/client-max-body-size: "20m" 
+spec:
+  # Double-check your F5 NGINX helm install for the exact class name 
+  # (usually 'nginx' or 'nginx-f5')
+  ingressClassName: nginx 
+  rules:
+    - host: litellm.yourdomain.com # Change to your actual domain
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: litellm-service
+                port:
+                  number: 80

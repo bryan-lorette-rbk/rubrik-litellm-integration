@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: litellm
+  labels:
+    app: litellm
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: litellm
+  template:
+    metadata:
+      labels:
+        app: litellm
+    spec:
+      containers:
+        - name: litellm
+          # --- UPDATE THIS TO YOUR NEW CUSTOM IMAGE ---
+          image: your-registry-username/litellm-custom-proxy:v1
+          imagePullPolicy: Always
+          args:
+            - "--config"
+            - "/app/config.yaml"
+          ports:
+            - containerPort: 4000
+              name: http
+          envFrom:
+            - secretRef:
+                name: litellm-secrets
+          
+          # --- PLUGIN MOUNT IS GONE, ONLY CONFIG REMAINS ---
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config.yaml
+              subPath: config.yaml
+          
+          livenessProbe:
+            httpGet:
+              path: /health/liveliness
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+      volumes:
+        - name: config-volume
+          configMap:
+            name: litellm-config
