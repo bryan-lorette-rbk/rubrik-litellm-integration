@@ -28,6 +28,6 @@ litellm_settings: # module level litellm settings - https://github.com/BerriAI/l
   
 
 general_settings: 
-  master_key: sk_1234 # [OPTIONAL] Only use this if you to require all calls to contain this key (Authorization: Bearer sk-1234)
+  master_key: sk_12345 # [OPTIONAL] Only use this if you to require all calls to contain this key (Authorization: Bearer sk-1234)
   database_url: "postgresql://postgres:dbpass@localhost:5432/litellm"
   store_models_in_db: true
