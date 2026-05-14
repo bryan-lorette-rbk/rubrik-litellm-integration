@@ -51,7 +51,7 @@ class BlockedToolsResult:
 
 
 class RubrikLogger(CustomGuardrail, CustomBatchLogger):
-    def __init__(self, **kwargs):
+    def __init__(self, api_key: str | None = None, api_base: str | None = None, **kwargs):
         self.flush_lock = asyncio.Lock()
         kwargs.setdefault("guardrail_name", "rubrik")
         kwargs.setdefault("event_hook", GuardrailEventHooks.post_call)
@@ -71,7 +71,7 @@ class RubrikLogger(CustomGuardrail, CustomBatchLogger):
             except ValueError:
                 verbose_logger.warning(f"Invalid RUBRIK_SAMPLING_RATE: {rbrk_sampling_rate!r}, using 1.0")
 
-        self.key = os.getenv("RUBRIK_API_KEY")
+        self.key = api_key or os.getenv("RUBRIK_API_KEY")
         _batch_size = os.getenv("RUBRIK_BATCH_SIZE")
 
         if _batch_size:
@@ -80,7 +80,7 @@ class RubrikLogger(CustomGuardrail, CustomBatchLogger):
             # the periodic interval is triggered (every 5 seconds by default)
             self.batch_size = int(_batch_size)
 
-        _webhook_url = os.getenv("RUBRIK_WEBHOOK_URL")
+        _webhook_url = api_base or os.getenv("RUBRIK_WEBHOOK_URL")
 
         if _webhook_url is None:
             raise ValueError("environment variable RUBRIK_WEBHOOK_URL not set")
@@ -445,4 +445,6 @@ class RubrikLogger(CustomGuardrail, CustomBatchLogger):
 
 # Module-level singleton for backwards compatibility with configs that use
 # `callbacks: rubrik.rubrik_handler` instead of the guardrails: section.
-rubrik_handler = RubrikLogger()
+# rubrik_handler = RubrikLogger()
+# `callbacks: rubrik.proxy_handler_instance` instead of the guardrails: section.
+proxy_handler_instance = RubrikLogger(api_key=os.getenv("RBK_KEY"), api_base=os.getenv("RBK_WEBHOOK"))
